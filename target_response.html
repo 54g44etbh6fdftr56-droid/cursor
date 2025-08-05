@@ -1,0 +1,450 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es">
+<head><meta http-equiv="Pragma" content="no-cache" /><meta http-equiv="Expires" content="-1" /><title>
+	SuTRAMITE
+</title>
+    <script type="text/javascript" src="js/md5.js"></script>
+    <script type="text/javascript" src="/js/jquery-1.3.2.min.js"></script>
+    <script type="text/javascript" src="/js/divanimado.js"></script>
+    <script type="text/javascript">
+        function pasarPassw() {
+            try {
+                var pass = $('#password').val();
+                var user = $('#usuario').val();
+                $('#PasswCifra').val(b64_md5(passTo7bits(user + pass)));
+            }
+            catch (E) {
+                alert("No se ha podido pasar la contraseña");
+            }
+        }
+
+        function passTo7bits(cadena) {
+            var nuevaCadena = "";
+            for (var c = 0; c < cadena.length; c++) {
+                var car = cadena.charCodeAt(c);
+                var michar = cadena.charAt(c);
+                if (car > 128) {
+                    car = car - 128;
+                    michar = String.fromCharCode(car);
+                }
+                nuevaCadena += michar;
+            }
+            return nuevaCadena;
+        }
+        function validarUsuario() {
+            try {
+                var u = $('#usuario');
+        if (u.val() == '') {
+            alert("Debe indicar su nombre de usuario");
+            u.focus();
+            return false;
+        }
+        else {
+            alert("Se enviará una nueva contraseña generada automáticamente\n a su dirección de correo electrónico.\nGracias.");
+            return true;
+        }
+    }
+    catch (E) {
+        alert("No se ha podido validar el usuario");
+        return false;
+    }
+}
+function claro(id, aclarar) {
+    if (aclarar) {
+        document.getElementById(id).style.backgroundColor = "#FFFFFF";
+    }
+    else {
+        document.getElementById(id).style.backgroundColor = "#F0E68C";
+    }
+}
+
+function maximizar() {
+    window.resizeTo(screen.width, screen.height - 20);
+    window.moveTo(0, 0);
+}
+
+var RecargarPagina = true;
+function ControlError() {
+    try {
+
+        var mensaje = $('#MensajeError').val();
+        if (mensaje != "") {
+            alert(mensaje);
+            RecargarPagina = false;
+            $('#MensajeError').val("");
+        }
+    }
+    catch (E) {
+        alert("No se ha podido controlor el error");
+    }
+}
+
+function noEsNumerico(val) {
+    return isNaN(val);;
+}
+
+function mostrarPanelProgreso() {
+    try {
+        document.getElementById('panelProgreso').style.display = 'block';
+    }
+    catch (E) {
+    }
+}
+
+function init() {
+    maximizar();
+    //ControlError();
+    $('#lblErrorUsuario').val("");
+
+    if (!vacio(document.getElementById('imgcaptcha'))) {
+        window.location.reload();
+    }
+
+}
+
+function ControlServicioSeleccionado() {
+    try {
+        var ind = document.getElementById('infServicio').selectedIndex;
+        if (ind < 1) {
+            alert("Debe seleccionar un servicio.\nGracias");
+            return false;
+        }
+        else {
+            mostrarPanelProgreso();
+            return true;
+        }
+    }
+    catch (E) {
+        return true;
+    }
+}
+function todoBlanco(valor) {
+    for (var i = 0; i < valor.length; i++) {
+        if (valor.charAt(i) != ' ') return false;
+    }
+    return true;
+}
+
+function vacio(campo) {
+    return campo.value == '' || todoBlanco(campo.value);
+}
+
+function vacioCombo(campo) {
+    return campo.selectedIndex == 0;
+}
+
+
+function validarDatosCumplimentados() {
+    var msg = "Valor no válido.";
+    var focused;
+
+
+    if (vacioCombo(document.getElementById('infServicio'))) {
+        msg = msg + "\nDebe seleccionarse el tipo de Solicitud";
+        if (focused == null) focused = document.getElementById('infServicio');
+    }
+    if (vacio(document.getElementById('txIdentificador')) && vacio(document.getElementById('txIdAcceda'))) {
+        msg = msg + "\nAlguno de los Identificadores debe cumplimentarse";
+        if (focused == null) focused = document.getElementById('txIdentificador');
+    }
+
+    if (vacio(document.getElementById('txtFechaNacimiento'))) {
+        msg = msg + "\nEl campo Año de Nacimiento debe cumplimentarse";
+        if (focused == null) focused = document.getElementById('txtFechaNacimiento');
+    }
+    if (vacio(document.getElementById('imgcaptcha'))) {
+        msg = msg + "\nEscriba los números que aparecen en la imagen";
+        if (focused == null) focused = document.getElementById('imgcaptcha');
+    }
+    if (focused != null) {
+        alert(msg);
+        focused.focus();
+        return false;
+    }
+    else
+        return true;
+}
+
+animatedcollapse.addDiv('datosBusqueda', 'fade=1,speed=400,hide=0,persist=1')
+animatedcollapse.ontoggle = function ($, divobj, state) {
+}
+
+animatedcollapse.addDiv('datosUsuario', 'fade=1,speed=400,hide=1,persist=1')
+animatedcollapse.ontoggle = function ($, divobj, state) {
+}
+
+function ClientValidate(source, arguments) {
+    alert(source);
+    if (arguments.Value != '') {
+        arguments.IsValid = true;
+    } else {
+        arguments.IsValid = false;
+    }
+}
+
+function infServicioOnchange(el)
+{
+
+    //Id Acceda
+    var lblAc = $("#IdentificadorLblAcceda");
+    var txtAc = $("#txIdAcceda");
+
+
+    if (el.value == "PASAPORTE") {
+        lblAc.removeClass("textouser");
+        lblAc.addClass("textouserDisabled")
+        txtAc.removeClass("casellaLarga");
+        txtAc.addClass("casellaLargaDisabled");
+        txtAc.attr('disabled', 'disabled');
+        txtAc.val('');
+    }
+    else {
+        lblAc.removeClass("textouserDisabled");
+        lblAc.addClass("textouser");
+        txtAc.removeClass("casellaLargaDisabled");
+        txtAc.addClass("casellaLarga");
+        txtAc.removeAttr('disabled');
+    }
+    
+}
+
+        function disableComponents() {
+
+            var el = $("#infServicio");
+            var lblAc = $("#IdentificadorLblAcceda");;
+            var txtAc = $("#txIdAcceda");
+
+            if (el[0].value == "PASAPORTE") {
+                lblAc.removeClass("textouser");
+                lblAc.addClass("textouserDisabled")
+                txtAc.removeClass("casellaLarga");
+                txtAc.addClass("casellaLargaDisabled");
+                txtAc.attr('disabled', 'disabled');
+                txtAc.val('');
+            }
+            else {
+                lblAc.removeClass("textouserDisabled");
+                lblAc.addClass("textouser");
+                txtAc.removeClass("casellaLargaDisabled");
+                txtAc.addClass("casellaLarga");
+                txtAc.removeAttr('disabled');
+            }
+
+        }
+
+
+animatedcollapse.init();
+
+window.onload = init;
+    </script>
+    <link rel="stylesheet" href="css/bordesround.css" type="text/css" /><link rel="stylesheet" href="css/estructura.css" type="text/css" /></head>
+<body>
+    <noscript>
+        <p>Bienvenido a SuTRAMITE</p>
+        <p>
+            La p&aacute;gina que est&aacute; viendo requiere para su funcionamiento el uso de JavaScript.  
+Si lo ha deshabilitado intencionadamente, por favor vuelva a activarlo.
+        </p>
+    </noscript>
+    <form method="post" action="./" id="FormSolicitante">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUJOTUyOTc2ODgxD2QWAgIDD2QWBAIEDw8WAh4EVGV4dAUbbWFydGVzLCA1IGRlIGFnb3N0byBkZSAyMDI1ZGQCDA9kFgJmD2QWCAIBDw8WAh8AZWRkAgMPEGRkFgFmZAIKDw8WAh8AZWRkAhgPDxYCHghJbWFnZVVybAUXQ2FwdGNoYUhvbWUuYXNweD9yPTg1MDJkZBgBBR5fX0NvbnRyb2xzUmVxdWlyZVBvc3RCYWNrS2V5X18WBQUKaWRlc3BhbnlvbAUJaWRmcmFuY2VzBQhpZGluZ2xlcwUPaW1nVmVyU3VUcmFtaXRlBRJJRENvbnN1bHRhclRyYW1pdGWw2/CiFwzHlypy9raSVKa810kZ2VENAyxjMF2VKXWCAA==" />
+
+
+<script src="/ScriptResource.axd?d=Al-9dlgD8TO-B9wNrp2Au2mWkZ12P4sKHa_Gib-qHtjHVoEJeV8vATd4aY9CoxCFKddyttTTfua824nzoFpzhjTE5HRZNqfU4rBmW34_k0Cov9cAlcw5KtZ1Q5Xwyk9oTaMsd9ryDcXsmJiofki2qtNriHo0klaZfCkZQEM2h-sDaR_g7s1K7-4z2eSmPzYm0&amp;t=ffffffffdfc97409" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+if (typeof(Sys) === 'undefined') throw new Error('ASP.NET Ajax client-side framework failed to load.');
+//]]>
+</script>
+
+<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="8D0E13E6" />
+<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEdABah6EmIt8yO0YZlK6YLLrYPv/K1+gnrBzK8HY2JnCeAlLzG3F+z5m3eiHEoayTwIwyUyfVeaa9s05NN0ot83jzDbe6JfwWRuLywo3q3+8Jf6p08QOypngI+3VXb4gOg8BHSil55hugGidSWfhecCzpwOe4y53RK77r0LmWTkTwSKv7s+Xiy6AHztsUCQ7ZiebvA6JTgvK78qWYl9YZb3AlnFLfeex5nAhUETkp6N08gVvcaA++rXJbmVtpkgbTIOfNW4JgxH6m+yrZBryuOu6CFjkvszrbx0p508sJYuU49n+tvh4X2g60GmNmIbjfM+x/xl4KPSpJMxgZnkNdl7Lr4RpogaBEciH7wsNnhYD7IrdVCqn8X5lCiVZ3cG2co84n2X2W8A/fAJHTUFk3K9Fl77ixyIk7cehzrzFMW1kZASLEqOvWhX79b60e7CRpXfJJ/glek9BHhCLWmjk5VAW7FgQFk+eM7Gu2ThhFDiCsLurx57Afl24KkOycLcSqmHZo=" />
+        
+        <script type="text/javascript" language="javascript">
+            Sys.WebForms.PageRequestManager.getInstance().add_endRequest(EndRequestHandler);
+            function EndRequestHandler(sender, args) {
+                if (args.get_error() != undefined) {
+                    args.set_errorHandled(true);
+                }
+            }
+        </script>
+        <input name="MensajeError" type="hidden" id="MensajeError" />
+        <input name="PasswCifra" type="hidden" id="PasswCifra" />
+        <div class="paginahome" style="margin-top: 15px;">
+            <div id="cabecera">
+                <table class="tablaHead" summary="Elementos de cabecera" title="Cabecera">
+                    <tr>
+                        <td rowspan="2" style="height: 100%; vertical-align: top">
+                            <img src="images/mae.png" alt="Logo del MAEC" style="border: solid 1px black" /></td>
+                        <td class="txtOficina">
+                            <img src="images/sutramiteconlogo60.png" alt="Logo de SuTRAMITE" /></td>
+                    </tr>
+                    <tr>
+                        <td class="fecha">
+                            <span id="infOficina2" class="txtOficina"></span><br />
+                            <span id="fechaHoy">martes, 5 de agosto de 2025</span></td>
+                    </tr>
+                </table>
+            </div>
+            <!-- inicio de la capa de contenido-->
+            <div id="contenidoInicio">
+                <!--<div id="idiomas" style="position:relative;z-index:1; top:0px; right:0px; text-align:right;"><input type="image" name="idespanyol" id="idespanyol" src="images/flag_es.png" alt="Español" onclick="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;idespanyol&quot;, &quot;&quot;, true, &quot;&quot;, &quot;&quot;, false, false))" />&nbsp;<input type="image" name="idfrances" id="idfrances" src="images/flag_fr.png" alt="Francé" onclick="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;idfrances&quot;, &quot;&quot;, true, &quot;&quot;, &quot;&quot;, false, false))" />&nbsp;<input type="image" name="idingles" id="idingles" src="images/flag_in.png" alt="English" onclick="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;idingles&quot;, &quot;&quot;, true, &quot;&quot;, &quot;&quot;, false, false))" /></div>-->
+                <!--si se vuelve a poner la barra de idiomas, el top de la capa entrada debe ser de -30px-->
+                <input name="hPassword" type="hidden" id="hPassword" />
+                <input name="hUsuario" type="hidden" id="hUsuario" />
+                <input name="hPanelProgreso" type="hidden" id="hPanelProgreso" />
+                <input name="hServicio" type="hidden" id="hServicio" />
+                <div id="p" style="margin: 10px 10px 0px 10px">
+                    <div id="payuda">
+                        <a href="#" rel="toggle[datosBusqueda]" data-openimage="/images/icono_recibo8.png" data-closedimage="/images/icono_recibo8.png">
+                            <img src="/images/icono_recibo8.png" alt="Acceso a través de los datos del resguardo" title="Acceso a través de los datos del resguardo" class="sinBorde" /></a>
+                    </div>
+                    <div id="ptitulo">
+                        <h1>Consulta de Trámites Consulares</h1>
+                        <h2>Desde esta página puede consultar los estados de los trámites realizados en su Oficina Consular.</h2>
+                        <p>Puede utilizar los datos del resguardo para acceder a la información de su trámite</p>
+                    </div>
+                </div>
+                <div class="headh" style="margin: 0px 10px 0px 10px; padding-top: 5px;"><a class="headRounded" href="#" rel="toggle[datosBusqueda]" data-openimage="/images/collapsed.gif" data-closedimage="/images/expanded.gif">
+                    <img src="/images/collapsed.gif" class="sinBorde" alt="Desplegar campos" />&nbsp;&nbsp; A c c e s o &nbsp;&nbsp; p o r &nbsp;&nbsp; R e s g u a r d o</a></div>
+                <div id="datosBusqueda" style="clear: both; margin: 0px 10px 0px 10px">
+                    <div class="contenth" style="padding-left: 20%; padding-top: 2%">
+                        <div id="PanelControles">
+	
+                                <table cellpadding="2" cellspacing="0" summary="Formulario datos de búsqueda" title="Datos del Resguardo">
+                                    <tr>
+                                        <td></td>
+                                        <td colspan="3">
+                                            <span id="lblErrorGeneral" class="formatoErroneo"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="textouser">Tipo de trámite <span class="asterisco">*</span></td>
+                                        <td colspan="3">
+                                            <select name="infServicio" id="infServicio" title="Selección del tipo de Solicitud" class="casellaSelect400" onchange="infServicioOnchange(this)">
+		<option selected="selected" value="0">-- SELECCIONE EL TIPO DE SOLICITUD --</option>
+		<option value="VISADO">SOLICITUD DE VISADO</option>
+		<option value="PASAPORTE">SOLICITUD DE PASAPORTE</option>
+
+	</select><label for="infServicio" id="LabelServicio" accesskey="s"></label></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="textouser">
+                                            <span id="IdentificadorLbl" class="textouser">Identificador</span>
+                                        </td>
+                                        <td colspan="3">
+                                            <label for="txIdentificador" id="LabelIdentificador"><input name="txIdentificador" type="text" maxlength="24" id="txIdentificador" title="Identificador del trámite" class="casellaLarga" /></label></td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td colspan="3">
+                                            <span id="lblErrorIdentificador" class="formatoErroneo"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="textouser">
+                                              <span id="IdentificadorLblAcceda" class="textouser">Identificador Acceda</span>
+                                        </td>
+                                        <td colspan="3">
+                                            <label for="txIdAcceda" id="LabelIdentificadorAcceda"><input name="txIdAcceda" type="text" maxlength="8" id="txIdAcceda" title="Identificador de la presolicitud" class="casellaLarga" /></label></td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td colspan="3">
+                                            <span id="lblErrorIdAcceda" class="formatoErroneo"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="textouser">A&ntilde;o de nacimiento <span class="asterisco">*</span></td>
+                                        <td>
+                                            <label for="txtFechaNacimiento" id="LabelNacimiento"><input name="txtFechaNacimiento" type="text" maxlength="4" id="txtFechaNacimiento" title="año del nacimiento" class="casella90" /></label></td>
+                                        <td colspan="2">
+                                            &nbsp;</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="textouser">Escriba los n&uacute;meros <span class="asterisco">*</span></td>
+                                        <td colspan="2">
+                                            <label for="imgcaptcha" id="LabelCaptcha"><input name="imgcaptcha" type="text" maxlength="6" id="imgcaptcha" title="Introduzca los númeos que ve en la imagen" class="casellaCorta" /></label></td>
+                                        <td>
+                                            <img id="imagenCaptcha" class="borde" src="CaptchaHome.aspx?r=8502" border="1" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td>&nbsp;</td>
+                                        <td colspan="3" class="textoayudadp">
+                                            &nbsp;</td>
+                                    </tr>
+                                </table>
+                            
+</div>
+                        <div class="casellaSelect" style="margin-left: -20%">
+                            <input type="image" name="imgVerSuTramite" id="imgVerSuTramite" src="images/btconsultartramite_out.png" alt="Acceso al Trámite" onclick="return validarDatosCumplimentados();WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;imgVerSuTramite&quot;, &quot;&quot;, true, &quot;&quot;, &quot;&quot;, false, false))" />
+                        </div>
+                        <div class="obligatorio">Todos los campos con (<span class="asterisco">*</span>) deben cumplimentarse obligatoriamente</div>
+                    </div>
+                    <b class="b4bh"></b><b class="b3bh"></b><b class="b2bh"></b><b class="b1h"></b>
+                </div>
+                <br />
+                
+                    
+                    
+
+                    <div class="headh" style="margin: 0px 10px 0px 10px; padding-top: 5px;"><a class="headRounded" href="#" rel="toggle[datosUsuario]" data-openimage="/images/collapsed.gif" data-closedimage="/images/expanded.gif">
+                    <img src="/images/collapsed.gif" class="sinBorde" alt="Desplegar campos" />&nbsp;&nbsp; A c c e s o &nbsp;&nbsp; p o r &nbsp;&nbsp; U s u a r i o &nbsp;&nbsp; y &nbsp;&nbsp; C o n t r a s e ñ a</a></div>
+
+                     <div id="datosUsuario" style="clear: both; margin: 0px 10px 0px 10px">
+                    <div class="contenth" style="padding-left: 20%;">
+                        <div style="margin-left: -10%; padding-right: 10%" class="casellaSelect">
+                            Si su trámite se inició mediante <b>Cita Previa Consular</b>, puede consultarlo introduciendo el usuario y contraseña que figuran en el resguardo de cita previa            
+                        </div>
+                        <div id="UpdatePanelUsuario">
+	
+                                <table summary="Datos Usuario" title="Datos del usuario">
+                                    <tr>
+                                        <td class="textouser">Usuario<label for="usuario" id="LabelUser"></label></td>
+                                        <td>
+                                            <input name="usuario" type="text" maxlength="40" id="usuario" title="Nombre de usuario" class="casellaCorta" /></td>
+
+                                    </tr>
+                                    <tr>
+                                        <td class="textouser">Contrase&ntilde;a<label for="password" id="LabelPassw"></label></td>
+                                        <td>
+                                            <input name="password" type="password" id="password" title="Contraseña del usuario" class="casellaCorta" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td>
+                                            <span id="lblErrorUsuario" class="formatoErroneo"></span></td>
+                                    </tr>
+
+                                </table>
+                            
+</div>
+                        <a id="lnkRecordarPassw" class="passwolvidado" href="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;lnkRecordarPassw&quot;, &quot;&quot;, true, &quot;&quot;, &quot;&quot;, false, true))" style="margin-left: 20%">He olvidado la contraseña</a>
+                        <div class="casellaSelect" style="margin-left: -20%">
+                            <input type="image" name="IDConsultarTramite" id="IDConsultarTramite" accesskey="A" src="images/btconsultartramite_out.png" alt="Consultar Trámite" onclick="pasarPassw();WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;IDConsultarTramite&quot;, &quot;&quot;, true, &quot;&quot;, &quot;&quot;, false, false))" />
+                        </div>
+                    </div>
+                    <b class="b4bh"></b><b class="b3bh"></b><b class="b2bh"></b><b class="b1h"></b>
+                     </div>
+                <br />
+                
+            </div>
+            <!--fin capa entrada-->
+            <div id="frontex" >
+			    <img src="images/fondosEuropeos.png" height="50" align="left" style="padding-left:40px;" alt="Logo Fondos Europeos" />
+			    <img src="images/fesi_sin_fondo.png" height="50" align="middle" style="padding-left:150px;padding-right:150px;" alt="Logo FESI" />
+			    <img src="images/cofinanciado.png" height="50" align="right" style="padding-right:40px;" alt="Logo cofinanciado" />
+		    </div> 
+        </div>
+
+
+        <!-- fin de la capa de contenido-->
+        <!--div id="creditos">Resolución de 1024x768 píxeles recomendada.</div-->
+        
+
+        <div id="panelProgreso" class="cajaProgresoPag" style="display: none">
+            <img alt="Cargando..." src="images/loading.gif" />
+            Cargando página...</div>
+    </form>
+</body>
+</html>
