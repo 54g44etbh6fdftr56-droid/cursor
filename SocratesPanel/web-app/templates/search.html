@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search - Socrates Panel</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        /* Report button styles */
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .report-section {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+        
+        .report-btn {
+            background-color: transparent;
+            border: 1px solid #dc3545;
+            color: #dc3545;
+            padding: 5px 10px;
+            font-size: 0.9em;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        
+        .report-btn:hover {
+            background-color: #f8d7da;
+        }
+        
+        .report-feedback {
+            font-size: 0.9em;
+            margin-top: 5px;
+            padding: 5px 8px;
+            border-radius: 4px;
+            text-align: right;
+            max-width: 300px;
+        }
+        
+        .feedback-success {
+            color: #28a745;
+            background-color: #e8f5e9;
+        }
+        
+        .feedback-error {
+            color: #dc3545;
+            background-color: #fdecea;
+        }
+
+        .search-options {
+            margin: 10px 0;
+            text-align: left;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Socrates Panel</h1>
+        <nav>
+            <ul>
+                <li><a href="/quotes">Quotes</a></li>
+                <li><a href="/search">Search</a></li>
+                <li><a href="/panel">Panel</a></li>
+                <li><a href="/login">Login</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <h1>Search Quotes</h1>
+            
+            <form action="/search" method="get" class="search-form">
+                <div class="search-box">
+                    <input type="text" name="query" 
+                           {% if search %}value="{{ search }}"{% end %} 
+                           placeholder="Search Socrates quotes..." 
+                           required>
+                    <button type="submit">Search</button>
+                </div>
+                <div class="search-options">
+                    <div class="toggle-container">
+                        <span class="toggle-label">Verified Only</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" name="verified_only" {% if verified_only %}checked{% end %}>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </form>
+
+            {% if search %}
+                <div class="search-results">
+                    <div class="results-header">
+                        <h2>Results for "{{ search }}"</h2>
+                        <div class="report-section">
+                            <button class="report-btn">Report issue with results</button>
+                            <div class="report-feedback" style="display: none;"></div>
+                        </div>
+                    </div>
+                    
+                    {% if verified_only %}
+                        <p class="filter-notice">Showing verified quotes only</p>
+                    {% end %}
+                    
+                    {% if not results %}
+                        <p>No results found for your search.</p>
+                    {% else %}
+                        <p class="results-count">{{ len(results) }} results found</p>
+                        
+                        <ul class="results-list">
+                            {% for result in results %}
+                                <li>
+                                    <p class="quote">"{{ escape(result) }}"</p>
+                                </li>
+                            {% end %}
+                        </ul>
+                    {% end %}
+                </div>
+            {% else %}
+                <div class="recent-searches">
+                    <h2>Recent Searches</h2>
+                    <ul id="recent-searches">
+                        <!-- Recent searches will be dynamically populated -->
+                    </ul>
+                    
+                    <h2>Popular Quotes</h2>
+                    <ul class="popular-quotes">
+                        <li>"The only true wisdom is in knowing you know nothing."</li>
+                        <li>"An unexamined life is not worth living."</li>
+                        <li>"I cannot teach anybody anything. I can only make them think."</li>
+                    </ul>
+                </div>
+            {% end %}
+        </div>
+    </main>
+
+    <script>
+        // Report functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const reportBtn = document.querySelector('.report-btn');
+            const feedbackElement = document.querySelector('.report-feedback');
+            
+            if (reportBtn && feedbackElement) {
+                reportBtn.addEventListener('click', async function() {
+                    // Disable button during request
+                    reportBtn.disabled = true;
+                    reportBtn.textContent = 'Reporting...';
+                    
+                    try {
+                        const response = await fetch('/api/report', {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json'
+                            }
+                        });
+                        
+                        const data = await response.json();
+                        feedbackElement.style.display = 'block';
+                        
+                        if (response.ok) {
+                            feedbackElement.textContent = data.message || 'Thank you for your report!';
+                            feedbackElement.className = 'report-feedback feedback-success';
+                        } else {
+                            feedbackElement.textContent = data.message || 'Error submitting report';
+                            feedbackElement.className = 'report-feedback feedback-error';
+                        }
+                    } catch (error) {
+                        feedbackElement.style.display = 'block';
+                        feedbackElement.textContent = 'Failed to submit report';
+                        feedbackElement.className = 'report-feedback feedback-error';
+                        console.error('Report error:', error);
+                    } finally {
+                        // Re-enable button
+                        reportBtn.disabled = false;
+                        reportBtn.textContent = 'Report issue with results';
+                        
+                        // Hide feedback after 5 seconds
+                        setTimeout(() => {
+                            feedbackElement.style.display = 'none';
+                        }, 5000);
+                    }
+                });
+            }
+            
+            // Recent searches functionality
+            async function fetchRecentSearches() {
+                try {
+                    const response = await fetch('/api/prev_searches');
+                    if (!response.ok) throw new Error('Failed to fetch searches');
+                    
+                    const data = await response.json();
+                    const list = document.getElementById('recent-searches');
+                    if (!list) return;
+                    
+                    list.innerHTML = '';
+                    
+                    if (data.searches && data.searches.length > 0) {
+                        data.searches.forEach(search => {
+                            const li = document.createElement('li');
+                            const link = document.createElement('a');
+                            link.href = `/search?query=${encodeURIComponent(search)}`;
+                            link.textContent = search;
+                            li.appendChild(link);
+                            list.appendChild(li);
+                        });
+                    } else {
+                        list.innerHTML = '<li>No recent searches found</li>';
+                    }
+                } catch (error) {
+                    console.error('Error fetching recent searches:', error);
+                    const list = document.getElementById('recent-searches');
+                    if (list) {
+                        list.innerHTML = '<li>Unable to load recent searches</li>';
+                    }
+                }
+            }
+            
+            fetchRecentSearches();
+        });
+    </script>
+</body>
+</html>

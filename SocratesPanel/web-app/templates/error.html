@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error - Socrates Panel</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Socrates Panel</h1>
+        <nav>
+            <ul>
+                <li><a href="/quotes">Quotes</a></li>
+                <li><a href="/search">Search</a></li>
+                <li><a href="/panel">Panel</a></li>
+                <li><a href="/login">Login</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            {% if error %}
+                <div class="alert error">
+                    <h1>Error</h1>
+                    <p>{{ error }}</p>
+                </div>
+            {% else %}
+                <div class="alert error">
+                    <h1>Unknown Error</h1>
+                    <p>An unknown error occurred. Please try again later.</p>
+                </div>
+            {% end %}
+            <p><a href="/" class="btn">Return to Home</a></p>
+        </div>
+    </main>
+
+</body>
+</html>

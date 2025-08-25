@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Socrates Panel</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        /* Custom headers section */
+        .headers-container {
+            display: none;
+            margin-top: 20px;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        
+        .header-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        
+        .header-input {
+            flex: 1;
+            margin-bottom: 0 !important;
+        }
+        
+        .add-header-btn {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+        
+        .add-header-btn:hover {
+            background-color: #5a6268;
+        }
+        
+        .remove-header-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            height: 36px;
+        }
+        
+        /* Adjust iframe size */
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+        
+        .header-label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Socrates Panel</h1>
+        <nav>
+            <ul>
+                <li><a href="/quotes">Quotes</a></li>
+                <li><a href="/search">Search</a></li>
+                <li><a href="/panel">Panel</a></li>
+                <li><a href="/login">Login</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <h1>Admin Panel</h1>
+            <p>Fetch and display content from a URL with optional custom headers.</p>
+            
+            {% if error %}
+                <div class="alert error">
+                    <p>{{ error }}</p>
+                </div>
+            {% end %}
+            
+            <form action="/panel" method="post" id="fetch-form">
+                <label for="url">URL to Fetch:</label>
+                <input type="text" id="url" name="url" required placeholder="https://example.com">
+                
+                <div class="toggle-container">
+                    <span class="toggle-label">Add Custom Headers</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="headers-toggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <div class="headers-container" id="headers-container">
+                    <span class="header-label">Custom Headers:</span>
+                    <div id="headers-list">
+                        <!-- Header inputs will be added here -->
+                    </div>
+                    <button type="button" class="add-header-btn" id="add-header">+ Add Header</button>
+                </div>
+                
+                <button type="submit">Fetch Content</button>
+            </form>
+            
+            {% if result %}
+                <div class="result-container">
+                    <h2>Fetch Result</h2>
+                    <iframe srcdoc="{{ escape(result) }}"></iframe>
+                </div>
+            {% end %}
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const headersToggle = document.getElementById('headers-toggle');
+            const headersContainer = document.getElementById('headers-container');
+            const headersList = document.getElementById('headers-list');
+            const addHeaderBtn = document.getElementById('add-header');
+            const form = document.getElementById('fetch-form');
+            
+            // Toggle headers container
+            headersToggle.addEventListener('change', function() {
+                headersContainer.style.display = this.checked ? 'block' : 'none';
+                if (!this.checked) {
+                    // Remove all header inputs when toggled off
+                    headersList.innerHTML = '';
+                }
+            });
+            
+            // Add header row
+            function addHeaderRow(key = '', value = '') {
+                const rowId = 'header-' + Date.now();
+                const row = document.createElement('div');
+                row.className = 'header-row';
+                row.innerHTML = `
+                    <input type="text" name="${rowId}-key" class="header-input header-key" 
+                           placeholder="Header name (e.g., Authorization)" value="${key}">
+                    <input type="text" name="${rowId}-value" class="header-input header-value" 
+                           placeholder="Header value" value="${value}">
+                    <button type="button" class="remove-header-btn">&times;</button>
+                `;
+                headersList.appendChild(row);
+                
+                // Add remove functionality
+                row.querySelector('.remove-header-btn').addEventListener('click', function() {
+                    row.remove();
+                });
+            }
+            
+            // Add header button
+            addHeaderBtn.addEventListener('click', function() {
+                addHeaderRow();
+            });
+            
+            // Form submission - rename fields to proper header format
+            form.addEventListener('submit', function() {
+                if (headersToggle.checked) {
+                    // Rename all header inputs to their final names
+                    document.querySelectorAll('.header-row').forEach((row, index) => {
+                        const keyInput = row.querySelector('.header-key');
+                        const valueInput = row.querySelector('.header-value');
+                        
+                        // Only include headers with both key and value
+                        if (keyInput.value.trim() && valueInput.value.trim()) {
+                            keyInput.name = '';
+                            valueInput.name = keyInput.value.trim();
+                        } else {
+                            // Remove inputs for empty headers
+                            keyInput.remove();
+                            valueInput.remove();
+                        }
+                    });
+                }
+            });
+            
+            // Initialize with one empty header if toggle is checked
+            if (headersToggle.checked) {
+                headersContainer.style.display = 'block';
+                addHeaderRow();
+            }
+        });
+    </script>
+</body>
+</html>
