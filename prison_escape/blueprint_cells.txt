@@ -1,0 +1,32 @@
+<p style="margin: 0px ; margin-top: 4px ; text-align: center ; text-decoration: underline"><b>Cell-122</b></p>
+<p style="margin: 4px 0px 0px ; text-decoration: underline"><b>Security <br>Maintenance</b></p>
+<p style="margin: 4px 0px 0px ; text-decoration: underline"><b>Monitoring<br>Room</b></p>
+<p style="margin: 4px 0px 0px ; text-decoration: underline"><b>Visitation</b></p>
+Entrance
+<p style="margin: 4px 0px 0px ; text-decoration: underline"><b>Kitchen</b></p>
+<p style="margin: 4px 0px 0px ; text-decoration: underline"><b>Library</b></p>
+<p style="margin: 4px 0px 0px ; text-decoration: underline"><b>Investigation<br>Room</b></p>
+Exit
+<p style="margin: 0px ; margin-top: 4px ; text-align: center ; text-decoration: underline"><b>Cell-231</b></p>
+<p style="margin: 0px ; margin-top: 4px ; text-align: center ; text-decoration: underline"><b>Nursery</b></p>
+<p style="margin: 0px ; margin-top: 4px ; text-align: center ; text-decoration: underline"><b>Cell-145</b></p>
+Laser Sensor
+<p style="margin: 0px ; margin-top: 4px ; text-align: center ; text-decoration: underline"><b>Cell-104</b></p>
+Door Sensor
+Fire Exit
+Alarm
+Landfill
+D2
+D3
+D4
+D1
+Base
+D4
+A1
+A2
+A3
+A4
+E1
+E2
+E3
+Fire Exit
